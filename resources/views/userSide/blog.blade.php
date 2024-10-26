@@ -12,10 +12,11 @@
                     <strong>Category:</strong> {{ $blog->getCategoryTitle() }} <br>
                     <strong>Subcategory:</strong> {{ $blog->subcategory->title}}
                 </p>
-
                 @if ($blog->image)
-                    <img src="{{ asset('storage/' . $blog->image) }}" alt="{{ $blog->title }}" class=" h-auto rounded-lg mb-4">
-                @endif
+            <img src="{{ asset($blog->image) }}" alt="{{ $blog->title }}" class="w-full h-auto rounded-lg mb-2 lazy" >
+        @else
+            <img src="{{$blog->image}}" alt="Placeholder" class="w-full h-auto rounded-lg mb-2 lazy" data-src="https://via.placeholder.com/300">
+        @endif
             </div>
         </div>
     </body>

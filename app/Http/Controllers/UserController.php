@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use Yajra\DataTables\DataTables;
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,18 +13,48 @@ class UserController extends Controller
         return view('addUser'); // Make sure you have this view in resources/views
     }
 
-    public function getAllUsers()
+
+    public function index(Request $request)
     {
-        $users = User::all(); // Retrieve all users from the database
-        return view('users', ['users' => $users]); // Pass users to the view
+        if ($request->ajax()) {
+            $data = User::select(['id', 'username', 'name', 'password', 'role']);
+            return DataTables::of($data)
+                ->addColumn('action', function ($row) {
+                    $actions = '';
+
+                    if (session('role') == "admin") {
+                        $actions = '
+                                            <a href="' . route('editUser', $row->id) . '" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Edit</a>
+                           <a href="javascript:void(0)" data-id="' . $row->id . '" class="delete-user bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</a>
+                        ';
+                    }
+
+                    return $actions;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('users');
     }
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
-        return redirect()->route('users')->with('success', 'User deleted successfully.');
+        $user = User::find($id);
+
+        if ($user) {
+            $user->delete();
+
+            return response()->json([
+                'message' => 'User deleted successfully.'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'User not found.'
+            ], 404);
+        }
     }
+
     public function edit(User $user)
     {
         return view('editUser', ['user' => $user]);

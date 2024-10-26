@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -18,10 +19,10 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $request->session()->put('user_name', $user->name);
-
-            $request->session()->put('username', $user->username);
             $request->session()->put('id', $user->id);
             $request->session()->put('role', $user->role);
+            Session::put('username', $user->username);
+            Session::put('name', $user->name);
 
             return redirect()->route('home') ;
         } else {
@@ -43,7 +44,7 @@ class AuthController extends Controller
                 return redirect()->back()->with(['status' => 'fail', 'message' => $e->getMessage()]);
             }
                 
-            $user = User::create([
+            User::create([
                 'name' => $request->input('name'),
                 'username' => $request->input('username'), // Use username field
                 'password' => Hash::make($request->input('password')),

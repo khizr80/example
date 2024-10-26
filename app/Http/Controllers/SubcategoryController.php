@@ -1,17 +1,33 @@
 <?php
 namespace App\Http\Controllers;
-use App\Http\Controllers\CategoryController;
 
 use App\Models\Subcategory;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 
 class SubcategoryController extends Controller
 {
-    public function getAllSubcategories()
+   
+    public function getSubcategories(Request $request)
     {
-        $subcategories = Subcategory::all();
-        return view('subcategories', compact('subcategories'));
+        if ($request->ajax()) {
+            $data = Subcategory::select(['id', 'title', 'slugs']);
+            return DataTables::of($data)
+            
+                ->addColumn('action', function ($row) {
+                    $btn = '';
+                   
+                    if(session('role')=="admin")
+                    {
+                    $btn = '<a href="'.route('editSubcategory', $row->id).'" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Edit</a>';
+                    $btn .= ' <a href="javascript:void(0)" data-id="'.$row->id.'" class="delete-subcategory bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</a>';
+                    }
+                    return $btn;
+                })
+                ->make(true);
+        }
+        return view('subcategories');
     }
 
 
@@ -51,10 +67,11 @@ class SubcategoryController extends Controller
         $subcategory->update($request->all());
         return redirect()->route('subcategories')->with('status', 'success')->with('message', 'Subcategory updated successfully!');
     }
-
-    public function destroy(Subcategory $subcategory)
+    public function delete($id)
     {
+        $subcategory = Subcategory::findOrFail($id);
         $subcategory->delete();
-        return redirect()->route('subcategories')->with('status', 'success')->with('message', 'Subcategory deleted successfully!');
+
+        return response()->json(['success' => 'Subcategory deleted successfully.']);
     }
 }
