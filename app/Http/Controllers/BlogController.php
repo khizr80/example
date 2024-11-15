@@ -9,7 +9,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class BlogController extends Controller
 {
-    // Display all blogs
+    public function __construct()
+    {
+        // Apply 'role' middleware to protect methods
+        $this->middleware('auth')->only(['create','store','edit','update','destroy']);
+    }
     public function index()
     {
         $blogs = Blog::with('subcategory', 'user')->get();

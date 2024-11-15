@@ -1,5 +1,6 @@
 <x-base>
     @section('content')
+    @include('partials.navAdmin');
 
     <div class="container mx-auto mt-8">
         <!-- Add Blog Button -->

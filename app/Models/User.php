@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory; // Import the HasFactory trait
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasFactory; // Include HasFactory
+    use Notifiable, HasFactory; 
+    use HasRoles;
 
     protected $table = 'webuser'; // Specify the custom table name
 

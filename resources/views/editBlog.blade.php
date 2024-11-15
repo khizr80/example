@@ -1,5 +1,7 @@
 <x-base>
     @section('content')
+    @include('partials.navAdmin');
+    
     <body class="bg-gray-100 text-gray-900">
         <div class="container mx-auto mt-8">
             <h1 class="text-2xl font-bold mb-4">Edit Blog</h1>

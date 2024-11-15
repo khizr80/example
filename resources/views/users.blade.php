@@ -1,11 +1,18 @@
 <x-base>
+    @section('content')
+    @include('partials.navAdmin')
+    @include('addUser')
+    @include('editUser')
 
-@section('content')
+    @if (session('role') == "admin")
+        <button id="toggle"
+            class="toggle-modal block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            type="button">
+            Add User
+        </button>
+    @endif
+
     <div class="container mx-auto mt-8">
-        @if (session('role') == "admin")
-            <a href="{{ route('addUser') }}"
-               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add User</a>
-        @endif
 
         <div class="overflow-x-auto">
             <table id="users-table" class="min-w-full bg-white shadow-md rounded-lg">
@@ -15,7 +22,7 @@
                         <th class="px-4 py-2 border">Username</th>
                         <th class="px-4 py-2 border">Name</th>
                         <th class="px-4 py-2 border">Role</th>
-                        <th class="px-4 py-2 border">Action</th>
+                        <th class="px-4 py-2 border">Actions</th> <!-- Action column -->
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -24,35 +31,54 @@
     </div>
 
     <script>
+        
         $(document).ready(function () {
-            $('#users-table').DataTable({
+            var userRole = "{{ session('role') }}";  // Pass the session role to JavaScript
+
+            var table = $('#users-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ url("/users")}}',
+                ajax: '{{ route("users")}}',
                 columns: [
                     { data: 'id', name: 'id' },
                     { data: 'username', name: 'username' },
                     { data: 'name', name: 'name' },
                     { data: 'role', name: 'role' },
-                    { data: 'action', name: 'action', orderable: false, searchable: false },
+                    {
+                        data: null, name: 'action', orderable: false, searchable: false, render: function () {
+                            if (userRole === "admin") {
+                                return `
+                                    <button type="button" class=" edit-user bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Edit</button>
+                                    <a href="javascript:void(0)" class="delete-user bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</a>
+                                `;
+                            } else {
+                                return '';
+                            }
+                        }
+                    }
                 ]
             });
-        });
-          $('body').on('click', '.delete-user', function () {
-        var userId = $(this).data('id');
-        
-            $.ajax({
-                url: '/users/' + userId,
-                type: 'DELETE',
-                data: {
-                    _token: '{{ csrf_token() }}' // Ensure CSRF token is sent
-                },
-                success: function (response) {
-                    $('#users-table').DataTable().ajax.reload(); // Reload table data
-                },
-            });
-    });
-    </script>
-@endsection
 
+            $('body').on('click', '.delete-user', function () {
+                var userId = this.parentNode.parentNode.children[0].textContent;
+
+                $.ajax({
+                    url: '/users/' + userId,
+                    type: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}' // Ensure CSRF token is sent
+                    },
+                    success: function (response) {
+                        $('#users-table').DataTable().ajax.reload(); // Reload table data
+
+                    },
+                    error: function (xhr) {
+                        showToast(errorMessage, 'error');
+                    }
+                });
+            });
+        });
+
+    </script>
+    @endsection
 </x-base>

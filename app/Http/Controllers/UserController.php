@@ -1,38 +1,26 @@
 <?php
 namespace App\Http\Controllers;
-use Yajra\DataTables\DataTables;
 
+use Yajra\DataTables\DataTables;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    public function create()
+    public function __construct()
     {
-        return view('addUser'); // Make sure you have this view in resources/views
+        // Apply 'role' middleware to protect methods
+        $this->middleware('role:admin')->only(['create','destroy']);
+        $this->middleware('auth')->only([ 'getUsers']);
     }
 
-
-    public function index(Request $request)
+    public function getUsers(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::select(['id', 'username', 'name', 'password', 'role']);
-            return DataTables::of($data)
-                ->addColumn('action', function ($row) {
-                    $actions = '';
-
-                    if (session('role') == "admin") {
-                        $actions = '
-                                            <a href="' . route('editUser', $row->id) . '" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Edit</a>
-                           <a href="javascript:void(0)" data-id="' . $row->id . '" class="delete-user bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</a>
-                        ';
-                    }
-
-                    return $actions;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+            $data = User::select(['id', 'username', 'name', 'role']);
+            return DataTables::of($data)->make(true);
         }
 
         return view('users');
@@ -55,10 +43,40 @@ class UserController extends Controller
         }
     }
 
-    public function edit(User $user)
-    {
-        return view('editUser', ['user' => $user]);
+    public function edit(Request $request)
+{
+    try {
+        $request->validate([
+            'name' => 'string|max:255',
+            'role' => 'required|in:user,admin',
+        ]);
+
+        $user = User::find($request->user_id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'User not found!',
+            ], 404); // HTTP status code 404 for not found
+        }
+
+        $user->name = $request->name ?? $user->name;
+        $user->role = $request->role;
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User updated successfully!',
+            'user' => $user // Return updated user data
+        ], 200); // HTTP status code 200 for successful update
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'fail',
+            'message' => $e->getMessage(),
+        ], 500); // HTTP status code 500 for server error
     }
+}
+
 
     public function update(Request $request)
     {
@@ -82,5 +100,36 @@ class UserController extends Controller
         return redirect()->route('users')->with(['status' => 'success', 'message' => 'Profile updated successfully!']);
     }
 
+    
+    public function create(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'string|max:255',
+                'username' => 'unique:webuser,username', // Assuming 'webuser' is your table name
+                'password' => 'string',
+                'role' => 'required|in:user,admin', // Ensure role is either 'user' or 'admin'
+            ]);
+            
+            $user = User::create([
+                'name' => $request->input('name'),
+                'username' => $request->input('username'), // Use username field
+                'password' => Hash::make($request->input('password')), // Hash the password
+                'role' => $request->input('role'), // Set the role
+            ]);
+    
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User registered successfully!',
+                'user' => $user // Optionally include the created user data
+            ], 201); // HTTP status code 201 for successful creation
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => $e->getMessage(),
+            ], 500); 
+        }
+    }
+    
 }
 
