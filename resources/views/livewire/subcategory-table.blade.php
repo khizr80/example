@@ -1,19 +1,4 @@
-<x-base>
-    @section('content')
-    @include('partials.navAdmin')
-    @include('addSubcategory')
-    @include('editSubcategory')
-    
-    <body class="bg-gray-100 text-gray-900">
-        <div class="container mx-auto mt-8">
-            @if (session('role') == "admin")
-                <button
-                    class="toggle-modal bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">
-                    Add Subcategory
-                </button>
-            @endif
-
-            <div class="container mx-auto mt-8">
+<div class="container mx-auto mt-8">
     <div class="mb-4">
         <input 
             type="text" 
@@ -76,9 +61,3 @@
         </div>
     </div>
 </div>
-
-            <!-- @livewire('subcategory-table') -->
-        </div>
-    </body>
-    @endsection
-</x-base>

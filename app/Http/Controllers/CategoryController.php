@@ -19,20 +19,23 @@ class CategoryController extends Controller
         if ($request->ajax()) {
             $data = Category::select(['id', 'title', 'slugs']);
 
-            return DataTables::of($data)
-                ->addColumn('action', function ($row) {
-                    $actions = '';
+            if (session('role') == "admin") {
+                return DataTables::of($data)
 
-                    if (session('role') == "admin") {
-                        $actions = '
-                            <button type="button" class=" edit-category bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Edit</button>
-                            <a href="javascript:void(0)" data-id="' . $row->id . '" class="delete-category bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</a>
-                        ';
-                    }
-                    return $actions;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+                ->addColumn('action', function ($row) {
+                        $actions = '';
+                            $actions = '
+                                <button type="button" class=" edit-category bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Edit</button>
+                                <a href="javascript:void(0)" data-id="' . $row->id . '" class="delete-category bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</a>
+                            ';
+                            return $actions;
+                    })->rawColumns(['action'])->make(true);
+            }
+            else
+            {
+                return DataTables::of($data)->make(true);;
+            }
+
         }
 
         return view('categories');

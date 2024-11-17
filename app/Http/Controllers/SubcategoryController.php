@@ -31,6 +31,7 @@ class SubcategoryController extends Controller
                 })
                 ->make(true);
         }
+        
         return view('subcategories');
     }
 
