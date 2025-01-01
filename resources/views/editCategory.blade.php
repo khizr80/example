@@ -87,10 +87,11 @@
             }
         });
 
-        // Handle form submission for editing category
         $('#editCategoryForm').on('submit', function (e) {
             e.preventDefault();  // Prevent the default form submission
             const categoryId = $('#category_id').val();
+            const row = $(`#categories-table tbody tr[data-id="${categoryId}"]`);
+
             const formData = $(this).serialize();
 
             $.ajax({
@@ -100,7 +101,11 @@
                 success: function (response) {
                     showToast('Category updated successfully!', 'success');
                     $('#edit-category-modal').addClass('hidden').removeClass('flex');
-                    $('#categories-table').DataTable().ajax.reload();
+                    const updatedTitle = $('#edit-title').val(); // Get the updated title
+                const updatedSlugs = $('#edit-slugs').val(); // Get the updated slugs
+
+                row.find('td:nth-child(2)').text(updatedTitle); // Update the Title column
+                row.find('td:nth-child(3)').text(updatedSlugs);
                 },
                 error: function (xhr) {
                     let errorMessage = 'An error occurred!';

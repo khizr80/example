@@ -25,29 +25,7 @@
 
     <div class="overflow-x-auto">
         <table class="min-w-full bg-white shadow-md rounded-lg">
-            <thead>
-                <tr>
-                    <th class="px-4 py-2 border cursor-pointer" wire:click="sortBy('id')">
-                        Id 
-                        @if ($sortField === 'id')
-                            <span>{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                        @endif
-                    </th>
-                    <th class="px-4 py-2 border cursor-pointer" wire:click="sortBy('title')">
-                        Title 
-                        @if ($sortField === 'title')
-                            <span>{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                        @endif
-                    </th>
-                    <th class="px-4 py-2 border cursor-pointer" wire:click="sortBy('slugs')">
-                        Slugs 
-                        @if ($sortField === 'slugs')
-                            <span>{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                        @endif
-                    </th>
-                    <th class="px-4 py-2 border">Actions</th>
-                </tr>
-            </thead>
+            
             <tbody>
                 @forelse ($subcategories as $subcategory)
                 <tr>

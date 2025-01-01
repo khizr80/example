@@ -1,33 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-@vite('resources/js/app.js')  <!-- For your main JS file -->
-@vite('resources/css/app.css')  <!-- For your main CSS file -->
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
-
+  <!-- <link rel="stylesheet" href="{{ asset('styles.css') }}"> -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Include Bootstrap CSS & JS -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
-
-  <!-- Include DataTables CSS & JS -->
-  <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"> -->
-  <!-- <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script> -->
-  <!-- <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script> -->
+  <!-- <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet"> -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script> -->
 
 </head>
 
-<body>
+<body class="bg-gray-900">
   <div id="toast-container" class="fixed bottom-5 right-5 z-50"></div>
 
-  <main class="bg-gray-800">
+  <main>
     @yield('content')
   </main>
 
@@ -55,7 +48,7 @@
 
       let toastIcon, toastText, bgColor, iconColor;
 
-      switch(type) {
+      switch (type) {
         case 'success':
           toastIcon = '<svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/></svg>';
           toastText = message || 'Item moved successfully.';
@@ -88,4 +81,5 @@
   </script>
 
 </body>
+
 </html>
