@@ -14,4 +14,8 @@ class Subcategory extends Model
         'slugs',
         'CategoryID'
     ];
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'CategoryID', 'id'); // Assuming 'CategoryID' is the foreign key in subcategories table and 'id' is the primary key in categories table.
+    }
 }

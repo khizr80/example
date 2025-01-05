@@ -15,25 +15,20 @@ class SubcategoryController extends Controller
         $this->middleware('auth')->only(['getSubcategories']);
     }
     public function getSubcategories(Request $request)
-    {
-        if ($request->ajax()) {
-            $data = Subcategory::select(['id', 'title', 'slugs']);
-            return DataTables::of($data)
-
-                ->addColumn('action', function ($row) {
-                    $btn = '';
-
-                    if (session('role') == "admin") {
-                        $btn = '<button  class="edit-subcategory bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Edit</button>';
-                        $btn .= ' <a href="javascript:void(0)" data-id="' . $row->id . '" class="delete-subcategory bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</a>';
-                    }
-                    return $btn;
-                })
-                ->make(true);
-        }
+{
+    if ($request->ajax()) {
+        $data = Subcategory::with('category') // Eager load category relationship
+            ->select(['id', 'title', 'slugs', 'CategoryID']); // Select the columns you need
         
-        return view('subcategories');
+        return DataTables::of($data)
+            ->addColumn('category_name', function ($row) {
+                return $row->category ? $row->category->name : 'No category'; // Access category name via relationship
+            })
+            ->make(true);
     }
+
+    return view('subcategories');
+}
 
     public function getid(Request $request)
     {

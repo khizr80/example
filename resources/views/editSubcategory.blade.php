@@ -72,7 +72,6 @@
     $(document).ready(function () {
 
         function loadCategories(selectedCategoryID) {
-            console.log(selectedCategoryID);
 
             $.ajax({
                 url: "{{ route('get') }}", // Adjust this route as per your setup
@@ -117,8 +116,7 @@ function getid(id, callback) {
         }
     });
 }
-
-// Open the modal and populate fields when clicking the "edit-subcategory" button
+ subcategoryId=null;
 $(document).on('click', '.edit-subcategory', function () {
     const subcategoryId = this.parentNode.parentNode.children[0].textContent;
     const subcategoryTitle = this.parentNode.parentNode.children[1].textContent;
@@ -161,7 +159,12 @@ $(document).on('click', '.edit-subcategory', function () {
                 success: function (response) {
                     showToast('Subcategory updated successfully!', 'success');
                     $('#edit-subcategory-modal').addClass('hidden').removeClass('flex');
-                    $('#subcategories-table').DataTable().ajax.reload();
+                    const updatedTitle = $('#edit-subcategory-title').val(); // Get the updated title
+                const updatedSlugs = $('#edit-subcategory-slugs').val(); // Get the updated slugs
+                const selectedText = $('#category-selecter option:selected').text();
+                    window.load();
+                // row.find('td:nth-child(2)').text(updatedTitle); // Update the Title column
+                // row.find('td:nth-child(3)').text(updatedSlugs);
                 },
                 error: function (xhr) {
                     let errorMessage = 'An error occurred!';

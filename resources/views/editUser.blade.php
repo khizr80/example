@@ -101,7 +101,7 @@
                 success: function (response) {
                     showToast('User updated successfully!', 'success');
                     $('#edit-user-modal').addClass('hidden').removeClass('flex');
-                    $('#users-table').DataTable().ajax.reload();
+                    window.load();
                 },
                 error: function (xhr) {
                     let errorMessage = 'An error occurred!';
