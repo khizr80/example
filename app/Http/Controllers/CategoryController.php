@@ -17,6 +17,7 @@ class CategoryController extends Controller
     public function getCategories(Request $request)
     {
         if ($request->ajax()) {
+            
             $data = Category::select(['id', 'title', 'slugs']);
             return DataTables::of($data)->make(true);
         }
@@ -52,6 +53,7 @@ class CategoryController extends Controller
     
     public function deleteCategory($id)
     {
+    
         $category = Category::find($id);
         if ($category) {
             $category->delete();

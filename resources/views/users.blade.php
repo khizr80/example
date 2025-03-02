@@ -94,7 +94,7 @@
                 $(document).ready(function () {
                     let currentPage = 0; // Initialize current page to 0
 
-                    function loadTableData(page = 0) {
+                    window.load = function loadTableData(page = 0) {
                         $.ajax({
                             url: '{{ url("/users") }}',
                             method: 'GET',
@@ -113,21 +113,29 @@
                                 $('#end-index').text(endIndex);
                                 console.log(response);
 
-                                for (let i = startIndex; i < endIndex; i++) {
-                                    const category = response.data[i];
-                                    $('#categories-table tbody').append(`
-                            <tr data-id="${category.id}" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <td class="px-6 py-4">${category.id}</td>
-<td class="px-6 py-4">${category.username}</td>
-<td class="px-6 py-4">${category.name}</td>
-<td class="px-6 py-4">${category.role}</td>
-                                <td class="text-right px-6 whitespace-nowrap">
-                                    <a href="javascript:void()" class="edit-user toggle-modal py-2 px-3 font-medium text-blue-600 hover:text-indigo-500 duration-150 hover:bg-gray-50 rounded-lg">Edit</a>
-                                    <button id="delete-category" data=${category.id} class="delete-category py-2 leading-none px-3 font-medium text-red-600 hover:text-red-500 duration-150 hover:bg-gray-50 rounded-lg">Delete</button>
-                                </td>
-                            </tr>
-                        `);
-                                }
+for (let i = startIndex; i < endIndex; i++) {
+    const category = response.data[i];
+    let actionButtons = '';
+
+    if ('{{ session("role") }}' === "admin") {
+        actionButtons = `
+            <a href="javascript:void()" class="edit-user toggle-modal py-2 px-3 font-medium text-blue-600 hover:text-indigo-500 duration-150 hover:bg-gray-50 rounded-lg">Edit</a>
+            <button id="delete-category" data-id=${category.id} class="delete-category py-2 leading-none px-3 font-medium text-red-600 hover:text-red-500 duration-150 hover:bg-gray-50 rounded-lg">Delete</button>
+        `;
+    }
+
+    $('#categories-table tbody').append(`
+        <tr data-id="${category.id}" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+            <td class="px-6 py-4">${category.id}</td>
+            <td class="px-6 py-4">${category.username}</td>
+            <td class="px-6 py-4">${category.name}</td>
+            <td class="px-6 py-4">${category.role}</td>
+            <td class="text-right px-6 whitespace-nowrap">
+                ${actionButtons}
+            </td>
+        </tr>
+    `);
+}
 
                                 updatePaginationButtons(page, totalPages);
                             },
@@ -213,24 +221,24 @@
     `);
                     }
 
-                    loadTableData();
+                    window.load();
 
                     $(document).on('click', '.prev-page', function () {
                         if (currentPage > 0) {
                             currentPage--;
-                            loadTableData(currentPage);
+                            window.load(currentPage);
                         }
                     });
 
                     $(document).on('click', '.next-page', function () {
                         currentPage++;
-                        loadTableData(currentPage);
+                        window.load(currentPage);
                     });
 
                     $(document).on('click', '.page-number', function () {
                         const page = $(this).data('page');
                         currentPage = page;
-                        loadTableData(currentPage);
+                        window.load(currentPage);
                     });
 
                     $(document).on('click', '.delete-category', function () {
@@ -238,14 +246,14 @@
                         console.log('Deleting category with ID:', id);
 
                         $.ajax({
-                            url: '/categories/' + id,
+                            url: '/users/' + id,
                             type: 'DELETE',
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                             },
                             success: function (data) {
-                                showToast('Category deleted successfully!', 'success');
-                                loadTableData(currentPage);
+                                showToast('user deleted successfully!', 'success');
+                                window.load(currentPage);
                             },
                             error: function (xhr) {
                                 showToast('An error occurred while deleting the category', 'error');

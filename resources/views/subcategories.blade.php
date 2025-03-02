@@ -101,20 +101,28 @@
                                 $('#end-index').text(endIndex);
 
                                 for (let i = startIndex; i < endIndex; i++) {
-                                    const subcategory = response.data[i];
-                                    $('#categories-table tbody').append(`
-                            <tr data-id="${subcategory.id}" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <td class="px-6 py-4">${subcategory.id}</td>
-                                <td class="px-6 py-4">${subcategory.title}</td>
-                                <td class="px-6 py-4">${subcategory.slugs}</td>
-                                <td class="px-6 py-4">${subcategory.category.title}</td>
-                                <td class="text-right px-6 whitespace-nowrap">
-                                    <button href="javascript:void()" class="edit-subcategory toggle-modal py-2 px-3 font-medium text-blue-600 hover:text-indigo-500 duration-150 hover:bg-gray-50 rounded-lg">Edit</button>
-                                    <button id="delete-subcategory" data-id=${subcategory.id} class="delete-category py-2 leading-none px-3 font-medium text-red-600 hover:text-red-500 duration-150 hover:bg-gray-50 rounded-lg">Delete</button>
-                                </td>
-                            </tr>
-                        `);
-                                }
+    const subcategory = response.data[i];
+    let actionButtons = '';
+
+    if ('{{ session("role") }}' === "admin") {
+        actionButtons = `
+            <button href="javascript:void()" class="edit-subcategory toggle-modal py-2 px-3 font-medium text-blue-600 hover:text-indigo-500 duration-150 hover:bg-gray-50 rounded-lg">Edit</button>
+            <button id="delete-subcategory" data-id=${subcategory.id} class="delete-category py-2 leading-none px-3 font-medium text-red-600 hover:text-red-500 duration-150 hover:bg-gray-50 rounded-lg">Delete</button>
+        `;
+    }
+
+    $('#categories-table tbody').append(`
+        <tr data-id="${subcategory.id}" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+            <td class="px-6 py-4">${subcategory.id}</td>
+            <td class="px-6 py-4">${subcategory.title}</td>
+            <td class="px-6 py-4">${subcategory.slugs}</td>
+            <td class="px-6 py-4">${subcategory.category.title}</td>
+            <td class="text-right px-6 whitespace-nowrap">
+                ${actionButtons}
+            </td>
+        </tr>
+    `);
+}
 
                                 updatePaginationButtons(page, totalPages);
                             },

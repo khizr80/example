@@ -1,54 +1,85 @@
 <x-base>
-    
     @section('content')
-    
+
     @include('partials.navAdmin');
-    <body class="bg-gray-100 text-gray-900">
+    <body>
         <div class="container mx-auto mt-8">
-            <h1 class="text-2xl font-bold mb-4">Change Profile</h1>
+            <h1 class="text-2xl font-bold mb-4">Profile</h1>
 
             <!-- Form for updating profile -->
-            <form action="{{ route('updateUser') }}" method="POST" class="bg-white p-6 rounded-lg shadow-md">
+            <form id="updateProfileForm" class="bg-gray-800 p-6 rounded-lg shadow-md">
                 @csrf
 
                 <!-- Username display -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Username</label>
-                    <p class="text-gray-900" >{{ session('username') }}</p>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+                    <p class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                        {{ session('username') }}
+                    </p>
                 </div>
-                
+
                 <!-- Name input field -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Name</label>
-                    <input type="text" name="name" value="{{ session('user_name') }}" required
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <label class="block mb-2 text-base font-medium text-gray-900 dark:text-white">Name</label>
+                    <input type="text" name="name" id="name" value="{{ session('user_name') }}" required
+                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
                 </div>
-                
-                
+
                 <!-- New password input field -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">New Password</label>
-                    <input type="password" name="new" placeholder="New password"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <label class="block mb-2 text-base font-medium text-gray-900 dark:text-white">New Password</label>
+                    <input type="password" name="new" id="new_password" placeholder="New password"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
                 </div>
+
                 <div class="mb-4">
                     @if (session('role') == "admin")
-                    <label class="block text-gray-700 font-bold mb-2">Role</label>
-                    <input type="text" placeholder="role" required name="role" value="{{ session('role') }}"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <label class="block mb-2 text-base font-medium text-gray-900 dark:text-white">Role</label>
+                    <input type="text" placeholder="role" required name="role" id="role" value="{{ session('role') }}"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
                     @else
-                    <input type="hidden" name="role" value="{{ session('role') }}">
+                    <input type="hidden" name="role" id="role" value="{{ session('role') }}">
                     @endif
                 </div>
-                
-                <button type="submit"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Change Profile
-            </button>
-            <input type="hidden" name="username" value="{{ session('username') }}"><input/>
-        </form>
+
+                <button type="button" id="submitProfile"
+                        class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    Update Profile
+                </button>
+            </form>
         </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('#submitProfile').on('click', function (e) {
+                    e.preventDefault();
+
+                    // Gather form data
+                    const data = {
+                        _token: "{{ csrf_token() }}",
+                        username: "{{ session('username') }}",
+                        name: $('#name').val(),
+                        new: $('#new_password').val(),
+                        role: $('#role').val(),
+                    };
+
+                    // AJAX request
+                    $.ajax({
+                        url: "{{ route('updateUser') }}",
+                        type: 'POST',
+                        data: data,
+                        success: function (response) {
+                            
+                    showToast('Profile updated successfully!', 'success');
+                        },
+                        error: function (xhr, status, error) {
+                            alert('An error occurred: ' + xhr.responseText);
+                        }
+                    });
+                });
+            });
+        </script>
     </body>
     @endsection
-
 </x-base>

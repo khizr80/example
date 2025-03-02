@@ -103,19 +103,26 @@
                                 $('#end-index').text(endIndex);
 
                                 for (let i = startIndex; i < endIndex; i++) {
-                                    const category = response.data[i];
-                                    $('#categories-table tbody').append(`
-                            <tr data-id="${category.id}" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <td class="px-6 py-4">${category.id}</td>
-                                <td class="px-6 py-4">${category.title}</td>
-                                <td class="px-6 py-4">${category.slugs}</td>
-                                <td class="text-right px-6 whitespace-nowrap">
-                                    <a href="javascript:void()" class="edit-category toggle-modal py-2 px-3 font-medium text-blue-600 hover:text-indigo-500 duration-150 hover:bg-gray-50 rounded-lg">Edit</a>
-                                    <button id="delete-category" data=${category.id} class="delete-category py-2 leading-none px-3 font-medium text-red-600 hover:text-red-500 duration-150 hover:bg-gray-50 rounded-lg">Delete</button>
-                                </td>
-                            </tr>
-                        `);
-                                }
+    const category = response.data[i];
+    let actionButtons = '';
+
+    // Check if user is admin before showing edit and delete buttons
+    if ('{{ session('role') }}' === 'admin') {
+        actionButtons = `
+            <a href="javascript:void()" class="edit-category toggle-modal py-2 px-3 font-medium text-blue-600 hover:text-indigo-500 duration-150 hover:bg-gray-50 rounded-lg">Edit</a>
+            <button id="delete-category" data-id="${category.id}" class="delete-category py-2 leading-none px-3 font-medium text-red-600 hover:text-red-500 duration-150 hover:bg-gray-50 rounded-lg">Delete</button>
+        `;
+    }
+
+    $('#categories-table tbody').append(`
+        <tr data-id="${category.id}" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+            <td class="px-6 py-4">${category.id}</td>
+            <td class="px-6 py-4">${category.title}</td>
+            <td class="px-6 py-4">${category.slugs}</td>
+            <td class="text-right px-6 whitespace-nowrap">${actionButtons}</td>
+        </tr>
+    `);
+}
 
                                 updatePaginationButtons(page, totalPages);
                             },
@@ -221,8 +228,11 @@
                         loadTableData(currentPage);
                     });
 
-                    $(document).on('click', '.delete-category', function () {
+                    $(document).on('click', '.delete-category', function (e) {
                         const id = $(this).data('id');
+                        e.preventDefault(); // Prevent the default button or anchor behavior
+                        let userRole = "{{ session('role') }}";
+    console.log(userRole);
                         console.log('Deleting category with ID:', id);
 
                         $.ajax({

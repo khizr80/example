@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cookie; // Import for cookie management
 
 class UserController extends Controller
 {
@@ -78,27 +79,60 @@ class UserController extends Controller
 }
 
 
-    public function update(Request $request)
-    {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'new' => 'nullable|string',
-                'role' => 'required|in:user,admin', // Ensure role is either user or admin
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->back()->with(['status' => 'fail', 'message' => $e->getMessage()]);
+public function update(Request $request)
+{
+    try {
+        // Validate the request data
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'new' => 'nullable|string',
+            'role' => 'required|in:user,admin', // Ensure role is either user or admin
+        ]);
+
+        // Retrieve the user by username
+        $user = User::where('username', $request->input('username'))->first();
+        if (!$user) {
+            return redirect()->back()->with(['status' => 'fail', 'message' => 'User not found!']);
         }
 
-        $user = User::where('username', $request->input('username'))->first();
+        // Update the user's details
         $user->name = $request->input('name');
         if ($request->input('new')) {
             $user->password = Hash::make($request->input('new'));
         }
         $user->role = $request->input('role');
         $user->save();
-        return redirect()->route('users')->with(['status' => 'success', 'message' => 'Profile updated successfully!']);
+
+        // Update session data
+        $request->session()->put('user_name', $user->name);
+        $request->session()->put('id', $user->id);
+        $request->session()->put('role', $user->role);
+        $request->session()->put('username', $user->username);
+
+        // Update cookies if needed
+        Cookie::queue('username', $user->username, 60 * 24 * 30); // 30 days
+        Cookie::queue('name', $user->name, 60 * 24 * 30);         // 30 days
+        Cookie::queue('role', $user->role, 60 * 24 * 30);         // 30 days
+
+        // Redirect back with success message
+        return redirect()->route('users')->with([
+            'status' => 'success',
+            'message' => 'Profile updated successfully!',
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // Handle validation exception
+        return redirect()->back()->with([
+            'status' => 'fail',
+            'message' => $e->getMessage(),
+        ]);
+    } catch (\Exception $e) {
+        // Handle any other exceptions
+        return redirect()->back()->with([
+            'status' => 'fail',
+            'message' => 'An unexpected error occurred: ' . $e->getMessage(),
+        ]);
     }
+}
 
     
     public function create(Request $request)

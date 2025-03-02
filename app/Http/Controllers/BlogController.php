@@ -150,17 +150,7 @@ public function getBlogsData()
                 return '<img src="'.asset($blog->image).'" alt="'.$blog->title.'" class="w-24 h-24 object-cover">';
             }
             return '';
-        })
-        ->addColumn('actions', function($blog) {
-            $buttons = '';
-            if (session('role') == "admin" || session('id') == $blog->UserId) {
-                $buttons .= '<a href="'.route('editBlog', $blog).'" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Edit</a>';
-                $buttons .= '<a href="javascript:void(0)"  data-id="' . $blog->id . '" class=" delete-blog   bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</a>';
-            
-            }
-            return $buttons;
-        })
-        ->rawColumns(['image', 'actions'])
+        })->rawColumns(['image'])
         ->make(true);
 }
 
