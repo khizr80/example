@@ -12,7 +12,7 @@ class SubcategoryController extends Controller
     public function __construct()
     {
         // $this->middleware('role:admin')->only(['create','add','edit','update','delete']);
-        $this->middleware('auth')->only(['getSubcategories']);
+        // $this->middleware('auth')->only(['getSubcategories']);
     }
     public function getSubcategories(Request $request)
 {

@@ -63,6 +63,7 @@
 </div>
 <script>
     $(document).ready(function () {
+        let x,y;
         $(document).on('click', '.edit-user', function () {
             const userId = this.parentNode.parentNode.children[0].textContent;
             const userName = this.parentNode.parentNode.children[2].textContent;
@@ -71,7 +72,9 @@
             $('#edit-name').val(userName);
             $('#edit-role').val(userRole);
 
-
+            x=this.parentNode.parentNode.children[2]
+            y=this.parentNode.parentNode.children[3]
+            
             $('#edit-user-modal').removeClass('hidden').addClass('flex');
         });
 
@@ -90,28 +93,46 @@
 
         // Handle form submission for editing user
         $('#editUserForm').on('submit', function (e) {
-            e.preventDefault();  // Prevent the default form submission
-            const userId = $('#user_id').val();
-            const formData = $(this).serialize();
+    e.preventDefault();
+    const userId = $('#user_id').val();
+    const formData = $(this).serialize();
 
-            $.ajax({
-                url: `/users/${userId}`, // Adjust the route as needed
-                type: 'POST',
-                data: formData,
-                success: function (response) {
-                    showToast('User updated successfully!', 'success');
-                    $('#edit-user-modal').addClass('hidden').removeClass('flex');
-                    window.load();
-                },
-                error: function (xhr) {
-                    let errorMessage = 'An error occurred!';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-                    showToast(errorMessage, 'error');
-                }
-            });
-        });
+    $.ajax({
+        url: `/users/${userId}`,
+        type: 'PUT',
+        data: formData,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                showToast('User updated successfully!', 'success');
+                $('#edit-user-modal').addClass('hidden').removeClass('flex');
+                // Reload the data table
+                const updatedName = $('#edit-name').val();
+                const updatedRole = $('#edit-role').val();
+                console.log(updatedName);
+                console.log(updatedRole);
+                const row = $('#edit-category-modal').data('row');
+                console.log();
+                
+                x.textContent=updatedName;
+                y.textContent=updatedRole;
+            } else {
+                showToast(response.message, 'error');
+            }
+        },
+        error: function (xhr) {
+            let errorMessage = 'An error occurred!';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+            showToast(errorMessage, 'error');
+        }
+    });
+});
+    
+    
     });
 
 

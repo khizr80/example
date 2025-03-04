@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -11,13 +11,13 @@ class CategoryController extends Controller
     public function __construct()
     {
         // Apply 'role' middleware to protect methods
-        $this->middleware('role:admin')->only(['create', 'add', 'edit', 'update', 'deleteCategory']);
+        // $this->middleware('role:admin')->only(['create', 'add', 'edit', 'update', 'deleteCategory']);
         $this->middleware('auth')->only(['getCategories']);
     }
+
     public function getCategories(Request $request)
     {
         if ($request->ajax()) {
-            
             $data = Category::select(['id', 'title', 'slugs']);
             return DataTables::of($data)->make(true);
         }
@@ -37,7 +37,6 @@ class CategoryController extends Controller
         return response()->json(['message' => 'Category added successfully!']);
     }
 
-
     public function edit(Request $request)
     {
         try {
@@ -50,16 +49,20 @@ class CategoryController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
-    
+
     public function deleteCategory($id)
     {
-    
+        // Simple role check using session
+        if (session('role') !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $category = Category::find($id);
         if ($category) {
             $category->delete();
             return response()->json(['success' => 'Category deleted successfully.']);
-        } else {
-            return response()->json(['error' => 'Category not found.'], 404);
         }
+        return response()->json(['error' => 'Category not found.'], 404);
     }
+
 }

@@ -13,8 +13,8 @@ class UserController extends Controller
     public function __construct()
     {
         // Apply 'role' middleware to protect methods
-        $this->middleware('role:admin')->only(['create','destroy']);
-        $this->middleware('auth')->only([ 'getUsers']);
+        // $this->middleware('role:admin')->only(['create','destroy']);
+        // $this->middleware('auth')->only([ 'getUsers']);
     }
 
     public function getUsers(Request $request)
@@ -45,40 +45,39 @@ class UserController extends Controller
     }
 
     public function edit(Request $request)
-{
-    try {
-        $request->validate([
-            'name' => 'string|max:255',
-            'role' => 'required|in:user,admin',
-        ]);
-
-        $user = User::find($request->user_id);
-
-        if (!$user) {
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'role' => 'required|in:user,admin',
+                'user_id' => 'required|exists:webuser,id'
+            ]);
+    
+            $user = User::find($request->user_id);
+            if (!$user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'User not found'
+                ], 404);
+            }
+    
+            $user->name = $request->name;
+            $user->role = $request->role;
+            $user->save();
+    
             return response()->json([
-                'status' => 'fail',
-                'message' => 'User not found!',
-            ], 404); // HTTP status code 404 for not found
+                'status' => 'success',
+                'message' => 'User updated successfully',
+                'user' => $user
+            ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        $user->name = $request->name ?? $user->name;
-        $user->role = $request->role;
-        $user->save();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User updated successfully!',
-            'user' => $user // Return updated user data
-        ], 200); // HTTP status code 200 for successful update
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'fail',
-            'message' => $e->getMessage(),
-        ], 500); // HTTP status code 500 for server error
     }
-}
-
-
 public function update(Request $request)
 {
     try {

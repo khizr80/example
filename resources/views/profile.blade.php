@@ -4,7 +4,6 @@
     @include('partials.navAdmin');
     <body>
         <div class="container mx-auto mt-8">
-            <h1 class="text-2xl font-bold mb-4">Profile</h1>
 
             <!-- Form for updating profile -->
             <form id="updateProfileForm" class="bg-gray-800 p-6 rounded-lg shadow-md">
@@ -70,7 +69,8 @@
                         type: 'POST',
                         data: data,
                         success: function (response) {
-                            
+                            window.location.reload();
+
                     showToast('Profile updated successfully!', 'success');
                         },
                         error: function (xhr, status, error) {

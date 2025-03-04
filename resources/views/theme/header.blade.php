@@ -18,7 +18,7 @@
                 <li><a class="dropdown-item" href="/userSide/home">UserSide</a></li>
                 <li><a class="dropdown-item" href="/profile">Profile</a></li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                <li><a class=" momo dropdown-item" href="/logout">Logout</a></li>
             </ul>
         </li>
     </ul>

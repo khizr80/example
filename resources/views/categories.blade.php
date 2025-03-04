@@ -232,7 +232,7 @@
                         const id = $(this).data('id');
                         e.preventDefault(); // Prevent the default button or anchor behavior
                         let userRole = "{{ session('role') }}";
-    console.log(userRole);
+                        console.log(userRole);
                         console.log('Deleting category with ID:', id);
 
                         $.ajax({
@@ -246,6 +246,7 @@
                                 loadTableData(currentPage);
                             },
                             error: function (xhr) {
+                                console.log(xhr.responseText);
                                 showToast('An error occurred while deleting the category', 'error');
                             }
                         });

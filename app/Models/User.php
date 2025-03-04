@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     use Notifiable, HasFactory; 
-    use HasRoles;
+    // use HasRoles;
 
     protected $table = 'webuser'; // Specify the custom table name
 

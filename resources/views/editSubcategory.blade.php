@@ -121,6 +121,10 @@ $(document).on('click', '.edit-subcategory', function () {
     const subcategoryId = this.parentNode.parentNode.children[0].textContent;
     const subcategoryTitle = this.parentNode.parentNode.children[1].textContent;
     const subcategorySlugs = this.parentNode.parentNode.children[2].textContent;
+title=this.parentNode.parentNode.children[1]
+slugs=this.parentNode.parentNode.children[2]
+categoryname=this.parentNode.parentNode.children[3]
+console.log(categoryname);
 
     getid(subcategoryId, function (categoryID) {
         loadCategories(categoryID);
@@ -162,9 +166,9 @@ $(document).on('click', '.edit-subcategory', function () {
                     const updatedTitle = $('#edit-subcategory-title').val(); // Get the updated title
                 const updatedSlugs = $('#edit-subcategory-slugs').val(); // Get the updated slugs
                 const selectedText = $('#category-selecter option:selected').text();
-                    window.load();
-                // row.find('td:nth-child(2)').text(updatedTitle); // Update the Title column
-                // row.find('td:nth-child(3)').text(updatedSlugs);
+                title.textContent=updatedTitle;
+                slugs.textContent=updatedSlugs;
+                categoryname.textContent=selectedText;
                 },
                 error: function (xhr) {
                     let errorMessage = 'An error occurred!';

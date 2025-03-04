@@ -104,7 +104,6 @@
                 success: function (response) {
                     showToast('User added successfully!', 'success');
                     $('#authentication-modal').addClass('hidden').removeClass('flex');
-                    $('#users-table').DataTable().ajax.reload();
                 },
                 error: function (xhr) {
                     let errorMessage = 'An error occurred!';

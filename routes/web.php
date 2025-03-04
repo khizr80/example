@@ -30,11 +30,11 @@ Route::post('/login', [AuthController::class, 'login'])->name('loginController')
 Route::post('/signup', [AuthController::class, 'signup'])->name('signupController');
 
 
-Route::middleware(['role:admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('deleteUser');
     Route::post('/users/create', [UserController::class, 'create'])->name('addUser');
-    Route::put('/users/{user}', [UserController::class, 'edit'])->name('editUser');
+    Route::put('/users/{id}', [UserController::class, 'edit'])->name('users.edit');
 
     Route::post('/categories/create', [CategoryController::class, 'create'])->name('addCategory');
     Route::put('/categories/edit', [CategoryController::class, 'edit'])->name('editCategory');
