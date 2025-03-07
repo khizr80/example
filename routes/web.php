@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubcategoryController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
@@ -8,7 +9,7 @@ use App\Models\Subcategory;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-
+Route::post('/convert-document', [DocumentController::class, 'convert'])->name('convert.document');
 Route::get('/', function () {
     return view('home'); })->middleware('auth')->name('home');
 
@@ -40,6 +41,9 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/categories/edit', [CategoryController::class, 'edit'])->name('editCategory');
     Route::delete('/categories/{id}', [CategoryController::class, 'deleteCategory'])->name('deleteCategory');
 
+    Route::get('/convertblog', function () {
+        return view('convertBlog');
+    })->name('convertblog');
     Route::get('/subcategories/add', [SubcategoryController::class, 'getCat'])->name('get');
     Route::get('/getid', [SubcategoryController::class, 'getid'])->name('getid');
     
